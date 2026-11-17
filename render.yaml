@@ -1,0 +1,33 @@
+# Blueprint de Render: en https://dashboard.render.com → New → Blueprint → elegir este repositorio.
+# Crea el servicio web (Docker) y la base de datos PostgreSQL, y las conecta.
+services:
+  - type: web
+    name: asesor-pedagogico
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/salud
+    envVars:
+      - key: ENTORNO
+        value: produccion
+      - key: SECRET_KEY
+        generateValue: true          # firma las sesiones y cifra la clave de API guardada
+      - key: DATABASE_URL
+        fromDatabase:
+          name: asesor-db
+          property: connectionString
+      - key: ADMIN_EMAIL
+        sync: false                  # Render lo pide al crear el Blueprint
+      - key: ADMIN_PASSWORD
+        sync: false                  # mínimo 8 caracteres, con letras y números
+      - key: SEED_DEMO
+        value: "true"                # datos ficticios para la sustentación; "false" para uso real
+      - key: REGISTRO_ABIERTO
+        value: "true"
+      - key: IA_PROVEEDOR
+        value: gemini                # gemini | anthropic | openai | ollama | simulado
+      - key: GEMINI_API_KEY
+        sync: false                  # se puede dejar vacía y configurar luego en Administración → Modelo de IA
+
+databases:
+  - name: asesor-db
+    plan: free

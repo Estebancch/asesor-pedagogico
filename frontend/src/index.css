@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+/* Sistema visual. La idea: un cuaderno de calificaciones honesto.
+   Dos gestos propios y todo lo demás en silencio:
+   1) la nota se lee sobre una regla de 0 a 5, no como un número suelto;
+   2) la evidencia citada se marca con resaltador, como en un documento revisado a mano. */
+@theme {
+  --font-sans: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --color-tinta: #12292e;
+  --color-grafito: #55676a;
+  --color-papel: #f4f8f7;
+  --color-linea: #d3dddc;
+  --color-petroleo: #0b6e69;
+  --color-petroleo-oscuro: #084f4c;
+  --color-petroleo-suave: #e2f1ef;
+  --color-resaltador: #ffe066;
+  --color-aviso: #9a5b00;
+  --color-aviso-suave: #fff4d6;
+  --color-grave: #a3261a;
+  --color-grave-suave: #fde9e6;
+  /* Nivel de dominio: una sola tinta, de clara a oscura (magnitud ordenada) */
+  --color-dom-0: #e4e9e9;
+  --color-dom-1: #c3e4df;
+  --color-dom-2: #7fc5bc;
+  --color-dom-3: #2e8f87;
+  --color-dom-4: #0b4f4c;
+}
+
+html { background: var(--color-papel); color: var(--color-tinta); }
+body { font-family: var(--font-sans); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, .titulo { font-family: var(--font-display); letter-spacing: -0.015em; line-height: 1.15; }
+:focus-visible { outline: 3px solid var(--color-petroleo); outline-offset: 2px; border-radius: 4px; }
+::selection { background: var(--color-resaltador); }
+
+mark.cita, .cita {
+  background: linear-gradient(transparent 12%, var(--color-resaltador) 12%, var(--color-resaltador) 88%, transparent 88%);
+  color: inherit; padding: 0 .15em; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.cita-dudosa { background: none; text-decoration: underline wavy var(--color-aviso); text-underline-offset: 4px; }
+
+/* En la capa de componentes para que las utilidades (pl-9, w-24, min-h-…) puedan ajustarlo */
+@layer components {
+  .campo { width: 100%; border: 1px solid var(--color-linea); background: #fff; border-radius: 8px; padding: .55rem .7rem; font: inherit; color: inherit; }
+  .campo:focus { outline: 3px solid var(--color-petroleo); outline-offset: 0; border-color: var(--color-petroleo); }
+  textarea.campo { min-height: 5rem; resize: vertical; }
+}
+.tabla th { text-align: left; font-weight: 500; color: var(--color-grafito); font-size: .875rem; padding: .5rem .75rem; border-bottom: 1px solid var(--color-linea); white-space: nowrap; }
+.tabla td { padding: .6rem .75rem; border-bottom: 1px solid var(--color-linea); vertical-align: top; }
+.num { font-variant-numeric: tabular-nums; }
+pre.fuente { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; font-size: .8125rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+
+.react-flow__attribution { display: none; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+@media print { .no-imprimir { display: none !important; } html { background: #fff; } }

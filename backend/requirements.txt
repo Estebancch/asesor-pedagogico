@@ -1,0 +1,31 @@
+# Servidor y API
+fastapi==0.163.1
+uvicorn==0.54.0
+python-multipart==0.0.34
+pydantic==2.14.3
+pydantic-settings==2.16.3
+httpx==0.28.1
+
+# Persistencia
+SQLAlchemy==2.1.9
+psycopg[binary]==3.3.9
+
+# Autenticación y cifrado
+PyJWT==2.15.1
+bcrypt==5.0.0
+cryptography==50.0.2
+
+# Lectura de evidencias y rúbricas (PDF, Word, Excel, PowerPoint)
+pdfplumber==0.11.10
+pypdf==7.1.0
+python-docx==1.2.0
+python-pptx==1.0.2
+openpyxl==3.1.5
+
+# Informe integral en PDF
+reportlab==5.1.0
+
+# Verificación técnica del código entregado (se ejecuta dentro del sandbox)
+pyflakes==4.1.0
+pytest==9.2.0
+numpy==2.5.5

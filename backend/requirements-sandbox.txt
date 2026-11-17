@@ -1,0 +1,7 @@
+# Opcional: librerías que el código de los estudiantes puede importar dentro del sandbox.
+# Sin ellas, las pruebas que las necesiten quedan como «no ejecutables» (no se penaliza
+# y se marca para revisión docente). Aumentan el tamaño de la imagen y el uso de memoria.
+# Sin versión fija a propósito: se instala la última compatible con el Python de la imagen.
+pandas
+scikit-learn
+matplotlib
