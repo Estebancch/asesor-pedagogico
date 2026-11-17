@@ -33,7 +33,7 @@ function PortafolioEstudiante({ estudianteId }) {
   return (
     <Pagina titulo={esDocente ? est.nombre : 'Mi portafolio'}
       migas={esDocente && <Link to="/app/portafolio" className="underline">Portafolios</Link>}
-      bajada={esDocente ? `${est.email}${est.codigo ? ` · código ${est.codigo}` : ''}` : 'Tus trabajos de las cohortes 1 y 2, cada uno con la rúbrica con la que se evaluó.'}
+      bajada={esDocente ? `${est.email}${est.codigo ? ` · código ${est.codigo}` : ''}` : 'Tus trabajos de los cortes 1 y 2, cada uno con la rúbrica con la que se evaluó.'}
       acciones={esDocente && <>
         <Link to={`/app/informe/${est.id}`} className="rounded-lg border border-linea bg-white px-3.5 py-2 font-medium hover:border-petroleo">Informe integral</Link>
         <Link to={`/app/mapa/${est.id}`} className="rounded-lg border border-linea bg-white px-3.5 py-2 font-medium hover:border-petroleo">Mapa de competencias</Link>
@@ -42,7 +42,7 @@ function PortafolioEstudiante({ estudianteId }) {
         {datos.cohortes.map((c) => (
           <section key={c.id}>
             <h2 className="text-xl font-bold">{c.nombre}{c.periodo && <span className="ml-2 text-base font-normal text-grafito">{c.periodo}</span>}</h2>
-            {c.laboratorios.length === 0 && <p className="mt-2 text-grafito">Esta cohorte aún no tiene laboratorios.</p>}
+            {c.laboratorios.length === 0 && <p className="mt-2 text-grafito">Este corte aún no tiene laboratorios.</p>}
             <div className="mt-3 space-y-3">
               {c.laboratorios.map((l) => {
                 const e = l.entregas[0]
@@ -89,7 +89,7 @@ function Matriz() {
   if (error) return <Pagina titulo="Portafolios"><Aviso tono="grave">{error}</Aviso></Pagina>
   const tono = { publicada: 'bg-petroleo-suave text-petroleo-oscuro', aprobada: 'bg-aviso-suave text-aviso', preliminar: 'bg-aviso-suave text-aviso', error: 'bg-grave-suave text-grave' }
   return (
-    <Pagina titulo="Portafolios" bajada="Entregas de cada estudiante en los laboratorios de las dos cohortes. Abre una celda para ver la evaluación.">
+    <Pagina titulo="Portafolios" bajada="Entregas de cada estudiante en los laboratorios de los dos cortes. Abre una celda para ver la evaluación.">
       {datos.filas.length === 0 ? <Vacio titulo="Aún no hay estudiantes">Los estudiantes aparecen aquí cuando crean su cuenta o cuando los registras en Administración.</Vacio> : (
         <div className="overflow-x-auto rounded-xl border border-linea bg-white">
           <table className="tabla w-full">

@@ -15,7 +15,7 @@ function Evolucion({ puntos }) {
   const Punta = ({ active, payload }) => (active && payload?.length ? (
     <div className="rounded-lg border border-linea bg-white px-3 py-2 text-sm shadow-md">
       <p className="font-medium">{payload[0].payload.titulo}</p>
-      <p className="text-grafito">Cohorte {payload[0].payload.cohorte} · nota <span className="num font-bold text-tinta">{fmtNota(payload[0].value)}</span></p>
+      <p className="text-grafito">Corte {payload[0].payload.cohorte} · nota <span className="num font-bold text-tinta">{fmtNota(payload[0].value)}</span></p>
     </div>) : null)
   return (
     <div className="h-72 w-full">
@@ -25,7 +25,7 @@ function Evolucion({ puntos }) {
           <XAxis dataKey="etiqueta" padding={{ left: 22, right: 14 }} tick={{ fontSize: 13, fill: '#55676a' }} tickLine={false} axisLine={{ stroke: '#d3dddc' }} />
           <YAxis domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]} tick={{ fontSize: 13, fill: '#55676a' }} tickLine={false} axisLine={false} />
           <ReferenceLine y={3} stroke="#55676a" strokeDasharray="4 4" label={{ value: 'Aprobación 3,0', position: 'insideBottomRight', fontSize: 12, fill: '#55676a' }} />
-          {corte > 0 && <ReferenceLine x={puntos[corte].etiqueta} stroke="#d3dddc" label={{ value: 'Inicia cohorte 2', position: 'insideTopLeft', fontSize: 12, fill: '#55676a' }} />}
+          {corte > 0 && <ReferenceLine x={puntos[corte].etiqueta} stroke="#d3dddc" label={{ value: 'Inicia corte 2', position: 'insideTopLeft', fontSize: 12, fill: '#55676a' }} />}
           <Tooltip content={<Punta />} cursor={{ stroke: '#12292e', strokeWidth: 1 }} />
           <Line type="linear" dataKey="nota" stroke="#0b6e69" strokeWidth={2} dot={{ r: 4.5, fill: '#0b6e69', stroke: '#fff', strokeWidth: 2 }} activeDot={{ r: 6.5 }} label={<Etiqueta />} isAnimationActive={false} />
         </LineChart>
@@ -72,7 +72,7 @@ export default function Informe() {
   return (
     <Pagina titulo="Informe integral del aprendizaje"
       migas={esDocente && <Link to={`/app/portafolio/${sid}`} className="underline">{d.estudiante.nombre}</Link>}
-      bajada={`${esDocente ? d.estudiante.nombre + ' · ' : ''}Consolidado de los laboratorios de las cohortes 1 y 2.`}
+      bajada={`${esDocente ? d.estudiante.nombre + ' · ' : ''}Consolidado de los laboratorios de los cortes 1 y 2.`}
       acciones={<>
         <Boton variante="secundario" icono={Printer} onClick={() => window.print()}>Imprimir</Boton>
         <Boton variante="secundario" icono={Download} ocupado={ocupado === 'pdf'} disabled={!d.evaluados} onClick={pdf}>Descargar PDF</Boton>
@@ -93,7 +93,7 @@ export default function Informe() {
               <Regla nota={d.promedio} grande etiqueta="Promedio general" />
             </div>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
-              {[['Laboratorios evaluados', `${d.evaluados} de ${d.total_laboratorios}`], ['Entregados', d.entregados], ['Promedio cohorte 1', fmtNota(d.promedio_por_cohorte['1'])], ['Promedio cohorte 2', fmtNota(d.promedio_por_cohorte['2'])]].map(([k, v]) => (
+              {[['Laboratorios evaluados', `${d.evaluados} de ${d.total_laboratorios}`], ['Entregados', d.entregados], ['Promedio corte 1', fmtNota(d.promedio_por_cohorte['1'])], ['Promedio corte 2', fmtNota(d.promedio_por_cohorte['2'])]].map(([k, v]) => (
                 <div key={k}><dt className="text-sm text-grafito">{k}</dt><dd className="num titulo text-2xl font-bold">{v}</dd></div>))}
             </dl>
           </section>
@@ -120,7 +120,7 @@ export default function Informe() {
           <Seccion titulo="Valoraciones por laboratorio">
             <div className="overflow-x-auto">
               <table className="tabla w-full">
-                <thead><tr><th>Cohorte</th><th>Laboratorio</th><th className="text-right">Nota</th><th>Nivel</th><th>Estado</th></tr></thead>
+                <thead><tr><th>Corte</th><th>Laboratorio</th><th className="text-right">Nota</th><th>Nivel</th><th>Estado</th></tr></thead>
                 <tbody>
                   {d.laboratorios.map((l) => (
                     <tr key={l.laboratorio_id}>

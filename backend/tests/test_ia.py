@@ -68,3 +68,73 @@ def test_error_claro_si_la_clave_es_invalida_o_nunca_valida():
     siempre_mal = lambda r: httpx.Response(200, json={"choices": [{"message": {"content": "no soy json"}}]})  # noqa: E731
     with pytest.raises(ErrorIA, match="no produjo una respuesta válida"):
         generar_estructurado(_proveedor("openai", siempre_mal), Salida, sistema="s", usuario="u", reintentos=1)
+
+
+def test_gemini_saturado_pasa_al_modelo_de_respaldo(monkeypatch):
+    monkeypatch.setattr("app.services.ia.base.time.sleep", lambda s: None)
+    pedidos = []
+
+    def manejador(req):
+        modelo = req.url.path.split("/models/")[1].split(":")[0]
+        pedidos.append(modelo)
+        if modelo == "modelo-x":
+            return httpx.Response(503, json={"error": {"message": "This model is currently experiencing high demand."}})
+        return httpx.Response(200, json={"candidates": [{"content": {"parts": [{"text": json.dumps({"nivel": "alto", "puntos": 4})}]}}],
+                                         "modelVersion": modelo})
+
+    obj, resp = generar_estructurado(_proveedor("gemini", manejador), Salida, sistema="s", usuario="u")
+    assert obj.nivel == "alto" and resp.modelo == "gemini-3.6-flash"
+    assert pedidos.count("modelo-x") == 4 and pedidos[-1] == "gemini-3.6-flash"
+
+
+def test_gemini_clave_invalida_no_prueba_respaldo():
+    pedidos = []
+
+    def manejador(req):
+        pedidos.append(req.url.path)
+        return httpx.Response(401, json={"error": {"message": "bad key"}})
+
+    with pytest.raises(ErrorIA):
+        _proveedor("gemini", manejador).generar_json(sistema="s", usuario="u", esquema={"type": "object"})
+    assert len(pedidos) == 1
+
+
+def test_gemini_sin_respuesta_a_tiempo_pasa_al_respaldo(monkeypatch):
+    monkeypatch.setattr("app.services.ia.base.time.sleep", lambda s: None)
+    pedidos = []
+
+    def manejador(req):
+        modelo = req.url.path.split("/models/")[1].split(":")[0]
+        pedidos.append(modelo)
+        if modelo == "modelo-x":
+            raise httpx.ReadTimeout("sin respuesta", request=req)
+        return httpx.Response(200, json={"candidates": [{"content": {"parts": [{"text": json.dumps({"nivel": "medio", "puntos": 3})}]}}],
+                                         "modelVersion": modelo})
+
+    obj, resp = generar_estructurado(_proveedor("gemini", manejador), Salida, sistema="s", usuario="u")
+    assert resp.modelo == "gemini-3.6-flash"
+    assert pedidos.count("modelo-x") == 1  # no insiste con el modelo que no respondió
+
+
+def test_gemini_cuota_agotada_pasa_al_respaldo_tras_un_reintento(monkeypatch):
+    monkeypatch.setattr("app.services.ia.base.time.sleep", lambda s: None)
+    pedidos = []
+
+    def manejador(req):
+        modelo = req.url.path.split("/models/")[1].split(":")[0]
+        pedidos.append(modelo)
+        if modelo in ("modelo-x", "gemini-3.6-flash"):
+            return httpx.Response(429, json={"error": {"message": "Quota exceeded"}})
+        return httpx.Response(200, json={"candidates": [{"content": {"parts": [{"text": json.dumps({"nivel": "bajo", "puntos": 1})}]}}],
+                                         "modelVersion": modelo})
+
+    obj, resp = generar_estructurado(_proveedor("gemini", manejador), Salida, sistema="s", usuario="u")
+    assert resp.modelo == "gemini-3.5-flash-lite"
+    assert pedidos.count("modelo-x") == 2 and pedidos.count("gemini-3.6-flash") == 2
+
+
+def test_gemini_todos_saturados_da_error_claro(monkeypatch):
+    monkeypatch.setattr("app.services.ia.base.time.sleep", lambda s: None)
+    proveedor = _proveedor("gemini", lambda r: httpx.Response(503, json={"error": {"message": "high demand"}}))
+    with pytest.raises(ErrorIA, match="503"):
+        proveedor.generar_json(sistema="s", usuario="u", esquema={"type": "object"})

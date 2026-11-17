@@ -17,7 +17,7 @@ export function FormularioLab({ inicial, cohortes, onGuardar, onCancelar }) {
   return (
     <form onSubmit={enviar} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-[1fr_7rem_10rem]">
-        <Campo etiqueta="Cohorte"><select className="campo" value={f.cohorte_id} onChange={cambiar('cohorte_id')}>{cohortes.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}</select></Campo>
+        <Campo etiqueta="Corte"><select className="campo" value={f.cohorte_id} onChange={cambiar('cohorte_id')}>{cohortes.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}</select></Campo>
         <Campo etiqueta="Orden"><input className="campo" type="number" min="1" value={f.orden} onChange={cambiar('orden')} /></Campo>
         <Campo etiqueta="Fecha"><input className="campo" type="date" value={f.fecha || ''} onChange={cambiar('fecha')} /></Campo>
       </div>
@@ -47,7 +47,7 @@ export default function Laboratorios() {
           <section key={c.id}>
             <h2 className="text-xl font-bold">{c.nombre}{c.periodo && <span className="ml-2 text-base font-normal text-grafito">{c.periodo}</span>}</h2>
             {c.laboratorios.length === 0
-              ? <div className="mt-3"><Vacio titulo="Sin laboratorios en esta cohorte" accion={<Boton icono={Plus} variante="secundario" onClick={() => setNuevo({ cohorte_id: c.id, orden: 1, titulo: '', descripcion: '', objetivos: '', fecha: '', pruebas_docente: '' })}>Crear el primero</Boton>}>Crea el laboratorio y luego carga su rúbrica.</Vacio></div>
+              ? <div className="mt-3"><Vacio titulo="Sin laboratorios en este corte" accion={<Boton icono={Plus} variante="secundario" onClick={() => setNuevo({ cohorte_id: c.id, orden: 1, titulo: '', descripcion: '', objetivos: '', fecha: '', pruebas_docente: '' })}>Crear el primero</Boton>}>Crea el laboratorio y luego carga su rúbrica.</Vacio></div>
               : (
                 <div className="mt-3 overflow-x-auto rounded-xl border border-linea bg-white">
                   <table className="tabla w-full">

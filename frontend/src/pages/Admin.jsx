@@ -323,12 +323,12 @@ function Sistema() {
               <span>Mostrar al estudiante la evaluación preliminar<span className="block text-sm text-grafito">Por defecto el estudiante solo ve una evaluación cuando el docente la aprueba y la publica. Si lo activas, verá la valoración de la IA marcada como «preliminar, sin revisión docente».</span></span>
             </label>
           </Seccion>
-          <Seccion titulo="Cohortes">
+          <Seccion titulo="Cortes">
             {fallo && <div className="mb-3"><Aviso tono="grave">{fallo}</Aviso></div>}
             <ul className="space-y-3">
               {datos.cohortes.map((c) => (
                 <li key={c.id} className="grid gap-3 sm:grid-cols-[1fr_9rem]">
-                  <Campo etiqueta={`Nombre de la cohorte ${c.numero}`}><input className="campo" defaultValue={c.nombre} onBlur={(e) => e.target.value.trim() !== c.nombre && guardarCohorte(c, { nombre: e.target.value.trim() })} /></Campo>
+                  <Campo etiqueta={`Nombre del corte ${c.numero}`}><input className="campo" defaultValue={c.nombre} onBlur={(e) => e.target.value.trim() !== c.nombre && guardarCohorte(c, { nombre: e.target.value.trim() })} /></Campo>
                   <Campo etiqueta="Periodo"><input className="campo" defaultValue={c.periodo || ''} placeholder="2026-2" onBlur={(e) => e.target.value.trim() !== (c.periodo || '') && guardarCohorte(c, { periodo: e.target.value.trim() })} /></Campo>
                 </li>
               ))}

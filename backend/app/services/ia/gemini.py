@@ -25,7 +25,23 @@ class Gemini(ProveedorIA):
             {"responseMimeType": "application/json"},
         ]
 
+    # Si el modelo configurado sigue saturado tras los reintentos (503 «high demand» y similares),
+    # agotó su cuota (429; en Gemini la cuota es por modelo) o no respondió a tiempo, se prueba con
+    # estos, en orden. El modelo que respondió queda en la trazabilidad.
+    RESPALDO = ("gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.8-flash")
+    SATURADO = (429, 500, 503, 529, "timeout")
+
     def generar_json(self, *, sistema, usuario, esquema, adjuntos=None, contexto=None) -> RespuestaIA:
+        modelos = [self.modelo] + [m for m in self.RESPALDO if m != self.modelo]
+        for i, modelo in enumerate(modelos):
+            try:
+                return self._generar(modelo, sistema, usuario, esquema, adjuntos)
+            except ErrorIA as e:
+                if getattr(e, "codigo", None) not in self.SATURADO or i == len(modelos) - 1:
+                    raise
+        raise ErrorIA("Gemini no respondió.")  # pragma: no cover
+
+    def _generar(self, modelo, sistema, usuario, esquema, adjuntos) -> RespuestaIA:
         if not self.api_key:
             raise ErrorIA("Falta la clave de API de Gemini. Configúrala en Administración → Modelo de IA "
                           "o en la variable GEMINI_API_KEY.")
@@ -33,7 +49,7 @@ class Gemini(ProveedorIA):
         for a in adjuntos or []:
             partes.append({"inlineData": {"mimeType": a.mime, "data": base64.b64encode(a.datos).decode()}})
         partes.append({"text": usuario})
-        url = f"{self.base_url}/models/{self.modelo}:generateContent"
+        url = f"{self.base_url}/models/{modelo}:generateContent"
         cab = {"x-goog-api-key": self.api_key, "Content-Type": "application/json"}
         ultimo = None
         variantes = self._variantes(esquema)
@@ -57,7 +73,7 @@ class Gemini(ProveedorIA):
             if not texto.strip():
                 raise ErrorIA(f"Gemini devolvió una respuesta vacía (finishReason={cands[0].get('finishReason')}).")
             um = datos.get("usageMetadata", {})
-            return RespuestaIA(texto=texto, modelo=datos.get("modelVersion", self.modelo),
+            return RespuestaIA(texto=texto, modelo=datos.get("modelVersion", modelo),
                                uso={"tokens_entrada": um.get("promptTokenCount", 0),
                                     "tokens_salida": um.get("candidatesTokenCount", 0) + um.get("thoughtsTokenCount", 0),
                                     "tokens_total": um.get("totalTokenCount", 0)})

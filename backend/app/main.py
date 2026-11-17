@@ -15,7 +15,7 @@ from sqlalchemy import select
 
 from .config import obtener_ajustes
 from .db import Base, SesionLocal, engine
-from .models import Cohorte, Evaluacion, Usuario
+from .models import Cohorte, Config, Evaluacion, Usuario
 from .routers import academico, admin, analitica, auth, entregas
 from .security import hash_password
 from .services.sandbox import proteger_proceso_servidor
@@ -36,7 +36,23 @@ def inicializar() -> None:
                 log.warning("ADMIN_PASSWORD no está definida: se creó %s con la clave temporal «%s». Cámbiala.", aj.admin_email, clave)
             db.add(Usuario(nombre=aj.admin_nombre, email=aj.admin_email.lower(), password_hash=hash_password(clave), rol="admin"))
         if not db.scalars(select(Cohorte)).first():
-            db.add_all([Cohorte(numero=1, nombre="Cohorte 1"), Cohorte(numero=2, nombre="Cohorte 2")])
+            db.add_all([Cohorte(numero=1, nombre="Corte 1"), Cohorte(numero=2, nombre="Corte 2")])
+        # Instalaciones anteriores usaban «cohorte» (el término del enunciado); la interfaz ahora dice «corte».
+        for c in db.scalars(select(Cohorte)):
+            if c.nombre == f"Cohorte {c.numero}":
+                c.nombre = f"Corte {c.numero}"
+        fila = db.get(Config, "proyecto")
+        if fila and isinstance(fila.valor, dict):
+            cambios = (("las cohortes 1 y 2", "los cortes 1 y 2"), ("las dos cohortes", "los dos cortes"))
+            def corregir(v):
+                if isinstance(v, str):
+                    for viejo, nuevo in cambios:
+                        v = v.replace(viejo, nuevo)
+                    return v
+                return [corregir(x) for x in v] if isinstance(v, list) else v
+            nuevo = {k: corregir(v) for k, v in fila.valor.items()}
+            if nuevo != fila.valor:
+                fila.valor = nuevo
         # Evaluaciones que quedaron a medias por un reinicio del servidor
         for ev in db.scalars(select(Evaluacion).where(Evaluacion.estado.in_(("en_cola", "procesando")))):
             ev.estado, ev.progreso = "error", ""

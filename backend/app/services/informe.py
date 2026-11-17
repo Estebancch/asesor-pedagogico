@@ -34,7 +34,7 @@ class NarrativaInforme(BaseModel):
     resumen_ejecutivo: str
     competencias_adquiridas: list[str]
     conocimientos_aplicados: list[str]
-    evolucion: str = Field(description="Lectura de la evolución entre laboratorios y entre cohortes")
+    evolucion: str = Field(description="Lectura de la evolución entre laboratorios y entre cortes")
     oportunidades: list[str]
     plan: list[AccionPlan]
 
@@ -110,7 +110,7 @@ def consolidar(db: Session, estudiante: Usuario, alcance: str = "publicadas") ->
         sentido = "ascendente" if pendiente > 0.05 else "descendente" if pendiente < -0.05 else "estable"
         texto_t = f"Tendencia {sentido} ({pendiente:+.2f} puntos por laboratorio).".replace(".", ",", 1)
         if delta is not None:
-            texto_t += f" Entre cohortes el promedio pasó de {c1:.2f} a {c2:.2f} ({delta:+.2f}).".replace(".", ",", 3)
+            texto_t += f" Entre cortes el promedio pasó de {c1:.2f} a {c2:.2f} ({delta:+.2f}).".replace(".", ",", 3)
     mapa = servicio_mapa.construir(db, estudiante, alcance)
     temas = sorted(({"nombre": n["nombre"], "dominio": n["dominio"], "nivel": n["dominio_etiqueta"],
                      "laboratorios": len(n["laboratorios"]), "aspectos": n["aspectos"][:3]}
@@ -193,10 +193,10 @@ def a_pdf(datos: dict, narrativa: dict | None, modelo: str = "") -> bytes:
     fmt = lambda x: "—" if x is None else f"{x:.1f}".replace(".", ",")  # noqa: E731
     cuerpo = [P("Informe integral del aprendizaje", h1),
               P(f"{est['nombre']}" + (f" · código {est['codigo']}" if est.get("codigo") else ""), p),
-              P(f"Curso de Inteligencia Artificial, cohortes 1 y 2 · generado el {datos['generado_en'][:10]} · "
+              P(f"Curso de Inteligencia Artificial, cortes 1 y 2 · generado el {datos['generado_en'][:10]} · "
                 f"alcance: evaluaciones {'publicadas' if datos['alcance'] == 'publicadas' else 'publicadas, aprobadas y preliminares'}", chico),
               Spacer(1, 8)]
-    resumen = [[P("Promedio general", chico), P("Nivel", chico), P("Laboratorios evaluados", chico), P("Cohorte 1", chico), P("Cohorte 2", chico)],
+    resumen = [[P("Promedio general", chico), P("Nivel", chico), P("Laboratorios evaluados", chico), P("Corte 1", chico), P("Corte 2", chico)],
                [P(fmt(datos["promedio"]), h2), P(datos["nivel_global"], h2), P(f"{datos['evaluados']} de {datos['total_laboratorios']}", h2),
                 P(fmt(datos["promedio_por_cohorte"].get("1")), h2), P(fmt(datos["promedio_por_cohorte"].get("2")), h2)]]
     cuerpo.append(tabla(resumen, [3.4 * cm] * 5, cabecera=False))
@@ -205,7 +205,7 @@ def a_pdf(datos: dict, narrativa: dict | None, modelo: str = "") -> bytes:
         if narrativa.get("aviso"):
             cuerpo.append(P(narrativa["aviso"], chico))
     cuerpo.append(P("Valoraciones por laboratorio", h2))
-    filas = [["Cohorte", "Laboratorio", "Nota", "Nivel", "Estado"]]
+    filas = [["Corte", "Laboratorio", "Nota", "Nivel", "Estado"]]
     for l in datos["laboratorios"]:
         filas.append([P(l["cohorte_nombre"], celda), P(l["titulo"], celda), fmt(l["nota"]), l["nivel"] or "—",
                       (l["estado"] or ("sin evaluar" if l["entregado"] else "sin entrega")).capitalize()])

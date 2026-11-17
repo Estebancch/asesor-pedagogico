@@ -108,7 +108,7 @@ def _sembrar() -> None:
         cohortes = {c.numero: c for c in db.scalars(select(Cohorte))}
         for n, periodo in ((1, "2026-1"), (2, "2026-2")):
             if n not in cohortes:
-                cohortes[n] = Cohorte(numero=n, nombre=f"Cohorte {n}")
+                cohortes[n] = Cohorte(numero=n, nombre=f"Corte {n}")
                 db.add(cohortes[n])
             cohortes[n].periodo = cohortes[n].periodo or periodo
         db.flush()

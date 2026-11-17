@@ -28,7 +28,7 @@ function PanelEstudiante() {
         </> : <p className="text-grafito">Cuando tu docente publique la primera evaluación, aquí verás tu promedio y tu evolución entre laboratorios.</p>}
       </Seccion>
       <Seccion titulo={pendientes.length ? `Te faltan ${pendientes.length} entregas` : 'Entregas al día'}>
-        {pendientes.length === 0 && <p className="text-grafito">Ya entregaste todos los laboratorios de las dos cohortes.</p>}
+        {pendientes.length === 0 && <p className="text-grafito">Ya entregaste todos los laboratorios de los dos cortes.</p>}
         <ul className="divide-y divide-linea">
           {pendientes.slice(0, 6).map((l) => (
             <li key={l.id} className="flex items-center justify-between gap-3 py-2.5">
@@ -41,7 +41,7 @@ function PanelEstudiante() {
       <Seccion titulo="Tus laboratorios" className="lg:col-span-2">
         <div className="overflow-x-auto">
           <table className="tabla w-full">
-            <thead><tr><th>Cohorte</th><th>Laboratorio</th><th>Estado</th><th className="text-right">Nota</th></tr></thead>
+            <thead><tr><th>Corte</th><th>Laboratorio</th><th>Estado</th><th className="text-right">Nota</th></tr></thead>
             <tbody>
               {labs.map((l) => (
                 <tr key={l.id}>
@@ -92,7 +92,7 @@ function PanelDocente() {
           {porPublicar.length > 0 && <p className="mt-3 text-grafito">{porPublicar.length} aprobadas aún sin publicar al estudiante.</p>}
         </Seccion>
         <Seccion titulo="Estado de los laboratorios" extra={<Link to="/app/laboratorios" className="font-medium text-petroleo underline">Gestionar</Link>}>
-          <p>{labs.length} laboratorios en {datos.cohortes.length} cohortes · {s.totales.entregas} entregas · {s.totales.evaluaciones} evaluaciones.</p>
+          <p>{labs.length} laboratorios en {datos.cohortes.length} cortes · {s.totales.entregas} entregas · {s.totales.evaluaciones} evaluaciones.</p>
           {sinRubrica.length > 0
             ? <div className="mt-3"><Aviso tono="aviso" titulo={`${sinRubrica.length} sin rúbrica validada`}>No se pueden evaluar hasta validar su rúbrica: {sinRubrica.map((l) => l.titulo).join('; ')}.</Aviso></div>
             : labs.length > 0 && <p className="mt-2 text-grafito">Todos tienen una rúbrica validada.</p>}

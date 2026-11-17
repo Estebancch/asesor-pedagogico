@@ -19,7 +19,7 @@ El agente trabajó en un entorno aislado en la nube, con acceso a una terminal y
 - **Requisitos.** Desglosó el enunciado en las 7 funcionalidades obligatorias y las 6 condiciones de ingeniería, y las convirtió en la tabla de correspondencia del README.
 - **Arquitectura.** Propuso un solo servicio (FastAPI que sirve el frontend de React compilado), archivos guardados en la base de datos, una capa propia de proveedores de IA y un sandbox por capas. Dejó escritas las alternativas descartadas y el motivo (ver `ARQUITECTURA.md`).
 - **Desarrollo.** Backend por módulos (rúbricas, extracción de evidencias, verificación, sandbox, evaluación, calificación, informe, mapa) y frontend por páginas.
-- **Pruebas.** 29 pruebas automáticas del backend y dos recorridos en navegador con Playwright: uno visita cada página con cada rol buscando errores de consola y de API; el otro ejecuta el flujo completo: registro, entrega, evaluación, ajuste docente, aprobación, publicación, informe, mapa, rúbrica y administración.
+- **Pruebas.** 35 pruebas automáticas del backend y dos recorridos en navegador con Playwright: uno visita cada página con cada rol buscando errores de consola y de API; el otro ejecuta el flujo completo: registro, entrega, evaluación, ajuste docente, aprobación, publicación, informe, mapa, rúbrica y administración.
 - **Despliegue.** Dockerfile, `render.yaml` y la guía de publicación.
 
 ## Nuestras intervenciones
@@ -33,6 +33,7 @@ Estas son las decisiones y los cuestionamientos que hicimos durante el desarroll
 | Cuestionamos si la IA real estaba integrada, al ver que los datos de demostración decían «modo simulado» | El agente revisó la conexión con Gemini contra la documentación oficial y corrigió un campo de la petición que no coincidía con la guía |
 | Decidimos hacer nosotros la publicación en GitHub y Render | No entregamos nuestras cuentas ni contraseñas al agente; pedimos el paso a paso y lo ejecutamos |
 | Aportamos la clave de Gemini para la prueba real | El entorno del agente no tiene salida hacia el servicio de Google, así que la prueba con el modelo real se hace en la plataforma publicada |
+| Pedimos llamar «cortes» a las etapas del curso, aunque el enunciado dice «cohortes» | La interfaz, el informe y el mapa dicen «Corte 1» y «Corte 2»; las instalaciones anteriores se renombran solas al arrancar |
 | Pedimos el guion de sustentación repartido entre los tres | Cada integrante presenta y responde por una parte del sistema |
 
 ## Fallos del código generado y cómo se detectaron
@@ -50,13 +51,14 @@ Todos estos fallos venían en código escrito por la propia IA. Ninguno se encon
 | Una prueba con bucle infinito hacía perder el resultado de todas las demás | Se subió a propósito un ZIP hostil (red, lectura de `/etc/passwd`, bucle) | Límite de tiempo por prueba dentro del sandbox, con su prueba de regresión |
 | Los nombres de criterios leídos de una rúbrica en PDF quedaban partidos en dos líneas | Se cargaron rúbricas de prueba en Word, Excel, PDF y Markdown | Las celdas se normalizan a una línea, con su prueba de regresión |
 | La petición a Gemini usaba un valor distinto al de la guía oficial | Nuestra pregunta sobre la IA real llevó a contrastar con la documentación | Se alineó con la guía; el código conserva dos formas alternativas por si el servicio rechaza la primera |
+| Ya publicada, la prueba de conexión falló: Gemini respondió 503 por alta demanda del modelo, aun después de los reintentos | Primera prueba con el modelo real en Render | Cambiamos a `gemini-3.6-flash` desde Administración. Además, si el modelo configurado sigue saturado, agota su cuota o no responde a tiempo, la plataforma pasa sola a otro modelo de Gemini y deja registrado en Trazabilidad cuál respondió |
 | La exportación del mapa no podía incrustar las tipografías de Google Fonts | Errores en la consola del navegador | Tipografías servidas por la propia plataforma |
 
 ## Limitaciones que encontramos en la IA
 
 - Escribe contra la versión de las librerías que recuerda, no contra la instalada. Tres de los fallos anteriores vienen de ahí.
 - Lo que no se ejecuta no está verificado. En todos los casos de la tabla el código «se veía bien».
-- No puede usar lo que no tiene: sin acceso a los servicios de IA externos, la integración con los proveedores quedó cubierta con respuestas simuladas, y la comprobación real depende de la plataforma publicada.
+- No puede usar lo que no tiene: sin acceso a los servicios de IA externos, la integración con los proveedores quedó cubierta con respuestas simuladas, y la comprobación real depende de la plataforma publicada. Esa comprobación fue la que encontró el error 503 por saturación del modelo, que ninguna prueba simulada había previsto.
 - No puede publicar ni actuar con nuestras cuentas. El despliegue es responsabilidad nuestra.
 - Su resumen de entrega mezcla lo hecho con lo pendiente. Preguntarle expresamente qué falta y qué límites tiene dio una lista más completa que la del primer resumen.
 
@@ -72,6 +74,7 @@ Todos estos fallos venían en código escrito por la propia IA. Ninguno se encon
 | Nada se publica sin aprobación docente | Supervisión humana |
 | Modo simulado claramente rotulado | Permite demostrar y probar sin clave, sin hacerlo pasar por una evaluación |
 | Sandbox por capas dentro del contenedor | Los alojamientos gratuitos no permiten Docker anidado; el límite queda documentado |
+| Máximo 2 evaluaciones a la vez y sandbox limitado a 384 MB | El plan gratuito de Render tiene 512 MB de memoria y la plataforma iba a recibir pruebas de seguridad del público: sin estos límites, varias evaluaciones o una «bomba de memoria» podían tumbar el servidor |
 | Gemini como proveedor por defecto | Nivel gratuito, JSON Schema nativo y lectura directa del PDF del informe |
 
 ## Verificación en la plataforma publicada

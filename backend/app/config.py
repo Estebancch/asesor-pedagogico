@@ -41,7 +41,7 @@ class Ajustes(BaseSettings):
     ia_modelo: str = ""
     ia_base_url: str = ""
     ia_temperatura: float | None = None  # None = valor recomendado por proveedor
-    ia_timeout_s: int = 180
+    ia_timeout_s: int = 150  # por llamada; si se vence, se pasa al modelo de respaldo
     ia_max_caracteres_evidencia: int = 180_000
     ia_multimodal: bool = True
     ia_pasadas_consistencia: int = 1
@@ -54,7 +54,7 @@ class Ajustes(BaseSettings):
     sandbox_timeout_s: int = 60
     sandbox_cpu_s: int = 30
     sandbox_prueba_s: int = 10  # límite por prueba: una prueba colgada no borra el resultado de las demás
-    sandbox_memoria_mb: int = 1024
+    sandbox_memoria_mb: int = 384  # el plan gratuito de Render tiene 512 MB para todo el servidor
     sandbox_permitir_red: bool = False
 
     @field_validator("database_url")

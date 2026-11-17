@@ -231,8 +231,8 @@ export default function Mapa() {
       bajada="Se genera con los temas identificados en cada laboratorio evaluado. El color indica tu nivel de dominio en cada tema."
       acciones={<Boton variante="secundario" icono={vista === 'mapa' ? List : Network} onClick={() => setVista(vista === 'mapa' ? 'tabla' : 'mapa')}>{vista === 'mapa' ? 'Ver como tabla' : 'Ver como mapa'}</Boton>}>
       <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2">
-        <div className="flex items-center gap-1 rounded-lg border border-linea bg-white p-1" role="group" aria-label="Cohorte">
-          {[['', 'Ambas cohortes'], ['1', 'Cohorte 1'], ['2', 'Cohorte 2']].map(([v, t]) => (
+        <div className="flex items-center gap-1 rounded-lg border border-linea bg-white p-1" role="group" aria-label="Corte">
+          {[['', 'Ambos cortes'], ['1', 'Corte 1'], ['2', 'Corte 2']].map(([v, t]) => (
             <button key={v} onClick={() => setCohorte(v)} aria-pressed={cohorte === v} className={`rounded-md px-3 py-1.5 font-medium ${cohorte === v ? 'bg-tinta text-white' : 'text-grafito hover:text-tinta'}`}>{t}</button>))}
         </div>
         {esDocente && <label className="flex items-center gap-2"><input type="checkbox" className="accent-petroleo" checked={alcance === 'todas'} onChange={(e) => setAlcance(e.target.checked ? 'todas' : 'publicadas')} />Incluir evaluaciones sin publicar</label>}

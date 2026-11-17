@@ -163,3 +163,22 @@ def test_admin_config_y_proyecto(cliente, admin):
     foto = cliente.post(f"/api/proyecto/integrantes/{iid}/foto", headers=admin, files={"foto": ("f.png", png, "image/png")}).json()["foto"]
     assert cliente.get(foto).content == png
     assert cliente.post(f"/api/proyecto/integrantes/{iid}/foto", headers=admin, files={"foto": ("f.png", b"<svg>", "image/png")}).status_code == 422
+
+
+def test_instalacion_anterior_pasa_de_cohorte_a_corte():
+    from app.db import SesionLocal
+    from app.main import inicializar
+    from app.models import Cohorte, Config
+    with SesionLocal() as db:
+        for c in db.query(Cohorte):
+            c.nombre = f"Cohorte {c.numero}"
+        fila = db.get(Config, "proyecto")
+        if fila is None:
+            db.add(Config(clave="proyecto", valor={"abstract": "Laboratorios de las cohortes 1 y 2.", "objetivos": ["Consolidar las dos cohortes."]}))
+        else:
+            fila.valor = {**fila.valor, "abstract": "Laboratorios de las cohortes 1 y 2."}
+        db.commit()
+    inicializar()
+    with SesionLocal() as db:
+        assert sorted(c.nombre for c in db.query(Cohorte)) == ["Corte 1", "Corte 2"]
+        assert "los cortes 1 y 2" in db.get(Config, "proyecto").valor["abstract"]

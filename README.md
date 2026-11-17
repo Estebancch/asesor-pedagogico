@@ -1,6 +1,6 @@
 # Asesor Pedagógico Inteligente
 
-Plataforma web para evaluar, retroalimentar y fortalecer las competencias adquiridas en los laboratorios de las cohortes 1 y 2 de un curso de Inteligencia Artificial.
+Plataforma web para evaluar, retroalimentar y fortalecer las competencias adquiridas en los laboratorios de los cortes 1 y 2 (las «cohortes» del enunciado) de un curso de Inteligencia Artificial.
 
 Proyecto final de Profundización I: Inteligencia Artificial — Universidad de Manizales, Ingeniería de Sistemas y Telecomunicaciones.
 
@@ -23,7 +23,7 @@ Con las evaluaciones publicadas genera el informe integral del aprendizaje (visi
 | Requisito | Dónde está |
 |---|---|
 | 1. Entrada de información | Laboratorio → Enunciado, Rúbrica y Entregas |
-| 2. Portafolio académico | Mi portafolio / Portafolios (por estudiante, cohorte y laboratorio; cada entrega guarda la versión de rúbrica) |
+| 2. Portafolio académico | Mi portafolio / Portafolios (por estudiante, corte y laboratorio; cada entrega guarda la versión de rúbrica) |
 | 3. Gestión de rúbricas | Laboratorio → Rúbrica: carga de PDF, Word, Excel, CSV, Markdown o JSON; editor con detección de inconsistencias; normalización a 100 %; versiones fijadas |
 | 4. Evaluación inteligente | Página de evaluación: valoración por criterio con citas, fortalezas, debilidades, recomendaciones, cálculo de la nota y revisión docente |
 | 5. Informe integrado | Informe integral: notas, competencias, niveles de dominio, evolución, brechas y plan; impresión y PDF |
@@ -65,6 +65,8 @@ Con Docker: `docker build -t asesor . && docker run -p 8000:8000 -e SEED_DEMO=tr
 | Estudiante con todo publicado | `laura@demo.edu.co` | `Estudiante2026` |
 | Estudiante con vacíos y evaluaciones en distintos estados | `andres@demo.edu.co` | `Estudiante2026` |
 
+En la plataforma publicada, la contraseña de la cuenta docente se cambió por seguridad; la entrega el equipo a quien la necesite. Para probar como estudiante, cualquiera puede crear su propia cuenta.
+
 Los datos de demostración se evalúan con el modo simulado, que no usa ningún modelo de IA: sirve para recorrer el flujo, no para calificar. Para evaluar de verdad, configura un proveedor en Administración → Modelo de IA.
 
 ## Publicarla
@@ -81,7 +83,7 @@ Con el código ya en GitHub, este enlace abre Render con el repositorio elegido 
 cd backend && python -m pytest -q
 ```
 
-29 pruebas: cálculo de la nota, validación y lectura de rúbricas, sandbox (red, subprocesos, archivos ajenos, entorno limpio, prueba colgada), capa de proveedores de IA con reintentos y la API de extremo a extremo (permisos, entrega, evaluación, revisión, publicación, informe y mapa).
+35 pruebas: cálculo de la nota, validación y lectura de rúbricas, sandbox (red, subprocesos, archivos ajenos, entorno limpio, prueba colgada), capa de proveedores de IA con reintentos y cambio a un modelo de respaldo (saturación, cuota agotada, sin respuesta a tiempo), y la API de extremo a extremo (permisos, entrega, evaluación, revisión, publicación, informe y mapa).
 
 ## Estructura
 

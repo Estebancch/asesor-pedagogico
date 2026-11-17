@@ -9,7 +9,9 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 import re
+import threading
 import time
 import unicodedata
 from collections import Counter
@@ -302,8 +304,20 @@ def _bytes(db: Session, archivo_id: int | None) -> tuple[str, bytes] | None:
     return (a.nombre, a.contenido) if a else None
 
 
+# Evaluaciones a la vez: cada una puede ejecutar código en el sandbox y llamar al modelo. En un
+# servidor pequeño (512 MB en el plan gratuito de Render) muchas a la vez agotan la memoria o la
+# cuota del proveedor; las demás esperan en cola. Se ajusta con EVALUACIONES_SIMULTANEAS.
+_TURNOS = threading.BoundedSemaphore(max(1, int(os.environ.get("EVALUACIONES_SIMULTANEAS", "2") or 2)))
+
+
 def ejecutar(evaluacion_id: int, fabrica_sesion, forzar: bool = False, simulado: bool = False) -> None:
-    """Tarea en segundo plano. Nunca lanza: los errores quedan en la evaluación."""
+    """Tarea en segundo plano. Espera turno si ya hay otras evaluaciones en curso."""
+    with _TURNOS:
+        _ejecutar(evaluacion_id, fabrica_sesion, forzar, simulado)
+
+
+def _ejecutar(evaluacion_id: int, fabrica_sesion, forzar: bool = False, simulado: bool = False) -> None:
+    """Nunca lanza: los errores quedan en la evaluación."""
     db: Session = fabrica_sesion()
     inicio = time.time()
     try:

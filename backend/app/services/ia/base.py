@@ -60,10 +60,18 @@ class ProveedorIA:
             for intento in range(4):
                 try:
                     r = c.post(url, json=cuerpo, headers=cabeceras)
+                except httpx.TimeoutException as e:
+                    # Sin respuesta en el tiempo límite: no se insiste con el mismo modelo (cada intento
+                    # costaría otros minutos); el proveedor puede pasar a un modelo de respaldo.
+                    error = ErrorIA(f"El modelo no respondió en {self.timeout_s} s ({self.nombre}): {type(e).__name__}.")
+                    error.codigo = "timeout"
+                    raise error from e
                 except httpx.HTTPError as e:
                     ultimo = e
                     time.sleep(min(2 ** intento, 8))
                     continue
+                if r.status_code == 429 and intento >= 1:
+                    return r  # cuota agotada: un solo reintento; después se prueba otro modelo
                 if r.status_code in (429, 500, 502, 503, 504, 529) and intento < 3:
                     espera = r.headers.get("retry-after")
                     m = re.search(r'"retryDelay":\s*"(\d+)', r.text)
@@ -83,7 +91,10 @@ class ProveedorIA:
         pistas = {401: "La clave de API no es válida.", 403: "La clave de API no tiene permiso para este modelo.",
                   404: "El modelo configurado no existe o no está disponible para esta clave.",
                   429: "Se alcanzó el límite de uso del servicio; intenta de nuevo en unos minutos."}
-        return ErrorIA(f"{proveedor} respondió {r.status_code}. {pistas.get(r.status_code, '')} Detalle: {str(msg)[:400]}")
+        pistas[503] = "El modelo está saturado en este momento; vuelve a intentarlo en unos minutos o elige otro modelo."
+        error = ErrorIA(f"{proveedor} respondió {r.status_code}. {pistas.get(r.status_code, '')} Detalle: {str(msg)[:400]}")
+        error.codigo = r.status_code
+        return error
 
     # --- interfaz -----------------------------------------------------------------
     def generar_json(self, *, sistema: str, usuario: str, esquema: dict, adjuntos: list[Adjunto] | None = None,

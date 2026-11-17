@@ -25,7 +25,7 @@ PROYECTO_DEFECTO = {
     "institucion": "Universidad de Manizales · Ingeniería de Sistemas y Telecomunicaciones · Profundización I: Inteligencia Artificial",
     "abstract": (
         "Asesor Pedagógico Inteligente es una plataforma web que ayuda a los estudiantes a autoevaluar y fortalecer las "
-        "competencias adquiridas en los laboratorios de las cohortes 1 y 2 del curso de Inteligencia Artificial. Recibe la "
+        "competencias adquiridas en los laboratorios de los cortes 1 y 2 del curso de Inteligencia Artificial. Recibe la "
         "descripción del laboratorio, su rúbrica y la solución del estudiante (informe PDF y código), verifica el código "
         "en un entorno aislado y usa un modelo de IA con salida estructurada para valorar cada criterio citando evidencia "
         "concreta. La nota de 0,0 a 5,0 la calcula el servidor con las ponderaciones de la rúbrica, y ninguna valoración "
@@ -33,7 +33,7 @@ PROYECTO_DEFECTO = {
     "objetivos": [
         "Identificar qué aprendió cada estudiante, cómo lo aplicó y qué debe fortalecer en cada laboratorio.",
         "Ofrecer evaluaciones consistentes, explicables y trazables, sujetas a validación docente.",
-        "Consolidar el aprendizaje de las dos cohortes en un informe integral y un mapa mental de competencias.",
+        "Consolidar el aprendizaje de los dos cortes en un informe integral y un mapa mental de competencias.",
     ],
     "funcionalidades": [
         "Portafolio por estudiante y laboratorio con informe PDF, código (ZIP o GitHub), video y presentación opcionales.",

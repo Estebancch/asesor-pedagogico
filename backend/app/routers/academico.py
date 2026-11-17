@@ -108,7 +108,7 @@ def cohortes(u: Usuario = Depends(usuario_actual), db: Session = Depends(obtener
 @router.post("/cohortes", status_code=201)
 def crear_cohorte(datos: CohorteEntrada, u: Usuario = Depends(docente_o_admin), db: Session = Depends(obtener_db)):
     if db.scalars(select(Cohorte).where(Cohorte.numero == datos.numero)).first():
-        raise HTTPException(409, f"Ya existe la cohorte {datos.numero}.")
+        raise HTTPException(409, f"Ya existe el corte {datos.numero}.")
     c = Cohorte(**datos.model_dump())
     db.add(c)
     db.commit()
@@ -119,10 +119,10 @@ def crear_cohorte(datos: CohorteEntrada, u: Usuario = Depends(docente_o_admin), 
 def modificar_cohorte(cid: int, datos: CohorteEntrada, u: Usuario = Depends(docente_o_admin), db: Session = Depends(obtener_db)):
     c = db.get(Cohorte, cid)
     if not c:
-        raise HTTPException(404, "Cohorte no encontrada.")
+        raise HTTPException(404, "Corte no encontrado.")
     otra = db.scalars(select(Cohorte).where(Cohorte.numero == datos.numero, Cohorte.id != cid)).first()
     if otra:
-        raise HTTPException(409, f"Ya existe la cohorte {datos.numero}.")
+        raise HTTPException(409, f"Ya existe el corte {datos.numero}.")
     for k, v in datos.model_dump().items():
         setattr(c, k, v)
     db.commit()
@@ -133,9 +133,9 @@ def modificar_cohorte(cid: int, datos: CohorteEntrada, u: Usuario = Depends(doce
 def borrar_cohorte(cid: int, u: Usuario = Depends(docente_o_admin), db: Session = Depends(obtener_db)):
     c = db.get(Cohorte, cid)
     if not c:
-        raise HTTPException(404, "Cohorte no encontrada.")
+        raise HTTPException(404, "Corte no encontrado.")
     if c.laboratorios:
-        raise HTTPException(409, "La cohorte tiene laboratorios. Elimínalos o muévelos antes de borrarla.")
+        raise HTTPException(409, "El corte tiene laboratorios. Elimínalos o muévelos antes de borrarlo.")
     db.delete(c)
     db.commit()
     return {"ok": True}
@@ -144,7 +144,7 @@ def borrar_cohorte(cid: int, u: Usuario = Depends(docente_o_admin), db: Session 
 @router.post("/laboratorios", status_code=201)
 def crear_lab(datos: LabEntrada, u: Usuario = Depends(docente_o_admin), db: Session = Depends(obtener_db)):
     if not db.get(Cohorte, datos.cohorte_id):
-        raise HTTPException(404, "Cohorte no encontrada.")
+        raise HTTPException(404, "Corte no encontrado.")
     lab = Laboratorio(**datos.model_dump())
     db.add(lab)
     db.flush()

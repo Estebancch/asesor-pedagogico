@@ -33,6 +33,7 @@ Cuándo cambiar:
 ## Limitaciones
 
 - La integración con los proveedores reales está cubierta por pruebas con respuestas HTTP simuladas (`tests/test_ia.py`). Durante el desarrollo no se ejecutó contra las API reales, porque no había claves disponibles. La primera comprobación con una clave real es el botón «Guardar y probar conexión»; conviene hacerla y evaluar una entrega antes de la sustentación.
+- Los modelos de la nube a veces se saturan (Gemini responde 503, «high demand»), agotan la cuota del nivel gratuito (429, que en Gemini es por modelo) o tardan demasiado. La plataforma reintenta con espera; si el modelo sigue saturado, sin cuota o no responde en 150 s (`IA_TIMEOUT_S`), pasa a otro modelo de Gemini (`gemini-3.6-flash`, `gemini-3.5-flash-lite`, `gemini-3.8-flash`, en ese orden, saltando el que ya falló). El modelo que respondió queda en la Trazabilidad. También se puede elegir otro modelo en Administración → Modelo de IA.
 - Un modelo de lenguaje puede equivocarse al elegir un nivel. Por eso se le exige citar, las citas se verifican, las reglas objetivas las aplica el servidor y ninguna nota se publica sin el docente.
 - Entregas muy grandes se recortan a `IA_MAX_CARACTERES_EVIDENCIA` (180 000 por defecto), priorizando informe, README y código principal; la evaluación indica qué archivos no entraron.
 - El video no se analiza. Las imágenes sueltas del ZIP se envían hasta un máximo de 6.

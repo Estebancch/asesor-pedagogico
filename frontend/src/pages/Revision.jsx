@@ -21,7 +21,7 @@ export default function Revision() {
               {[...lista].sort((a, b) => (filtro === 'preliminar' ? b.alertas - a.alertas : 0)).map((e) => (
                 <tr key={e.id}>
                   <td><Link to={`/app/evaluaciones/${e.id}`} className="font-medium hover:underline">{e.estudiante}</Link></td>
-                  <td>{e.laboratorio}<span className="block text-sm text-grafito">Cohorte {e.cohorte}</span></td>
+                  <td>{e.laboratorio}<span className="block text-sm text-grafito">Corte {e.cohorte}</span></td>
                   <td><Estado valor={e.estado} />{e.error && <span className="mt-1 block max-w-xs text-sm text-grave">{e.error}</span>}</td>
                   <td className="num text-right font-medium">{fmtNota(e.nota)}</td>
                   <td className={`num text-right ${e.alertas ? 'font-medium text-aviso' : 'text-grafito'}`}>{e.alertas || '—'}</td>

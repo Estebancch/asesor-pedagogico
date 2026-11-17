@@ -96,7 +96,7 @@ Cada evaluación conserva: lista de evidencias con su huella, texto exacto que v
 ## Límites conocidos
 
 - El video se guarda como enlace y no se analiza. Las presentaciones PPTX se leen como texto por diapositiva; las imágenes y el PDF se envían al modelo solo si este es multimodal.
-- Las evaluaciones corren en hilos del mismo proceso web: suficiente para un curso, no para cientos de evaluaciones simultáneas (el paso natural es una cola de trabajos).
+- Las evaluaciones corren en hilos del mismo proceso web, como máximo 2 a la vez (`EVALUACIONES_SIMULTANEAS`); las demás esperan en cola. Suficiente para un curso, no para cientos de evaluaciones simultáneas (el paso natural es una cola de trabajos aparte). El sandbox usa 384 MB por defecto (`SANDBOX_MEMORIA_MB`), pensado para los 512 MB del plan gratuito de Render.
 - Con un solo proceso, el freno de intentos de inicio de sesión vive en memoria.
 - No hay recuperación de contraseña por correo: la restablece el administrador.
 - El modo simulado no evalúa: empareja términos. Existe para pruebas y demostración sin clave de API, y cada resultado suyo lo advierte.
